@@ -20,6 +20,16 @@ def make_i2c():
     )
 
 
+def _mqtt_reconnect(client):
+    try:
+        client.connect()
+        print("[mqtt] reconnected")
+        return True
+    except Exception as e:
+        print("[mqtt] reconnect failed:", e)
+        return False
+
+
 def main():
     # Wi-Fi + MQTT
     wlan = netmqtt.wifi_connect(CFG)
@@ -65,7 +75,7 @@ def main():
 
         if mqtt and hasattr(asapp, "app"):
             if hasattr(asapp.app, "use_mqtt"):
-                asapp.app.use_mqtt(mqtt, base_topic="home/thunderstorm")
+                asapp.app.use_mqtt(mqtt, base_topic="home/thunderstorm", reconnect_cb=lambda: _mqtt_reconnect(mqtt))
             else:
                 asapp.app._mqtt = mqtt
                 asapp.app._mqtt_topic = "home/thunderstorm"

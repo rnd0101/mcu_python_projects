@@ -29,7 +29,8 @@ class AS3935App:
 
         # mqtt/state
         self._mqtt = None
-        self._mqtt_topic = "home/thunderstorm"  # base topic (you can override in start())
+        self._mqtt_topic = "home/thunderstorm"
+        self._mqtt_reconnect = None
         self._last_src = 0
         self._last_dist_ms = 0
         self._last_noise_ms = 0
@@ -149,10 +150,12 @@ class AS3935App:
             print("stopped")
 
     # extras / configuration
-    def use_mqtt(self, client, base_topic=None):
+    def use_mqtt(self, client, base_topic=None, reconnect_cb=None):
         self._mqtt = client
         if base_topic:
             self._mqtt_topic = base_topic
+        if reconnect_cb:
+           self._mqtt_reconnect = reconnect_cb
         return True
 
     def set_throttle(self, disturber_ms=None, noise_ms=None):
@@ -218,6 +221,20 @@ class AS3935App:
             self._mqtt.publish(topic, payload, retain)
         except Exception as e:
             print("[as3935] mqtt publish error:", e)
+            # one-shot reconnect + retry
+            if self._mqtt_reconnect:
+                try:
+                    if self._mqtt_reconnect():
+                        try:
+                            self._mqtt.publish(topic, payload, retain)
+                        except Exception as e2:
+                            print("[as3935] mqtt retry failed:", e2)
+                except Exception as e3:
+                    print("[as3935] mqtt reconnect failed:", e3)
+                try:
+                    self._mqtt.publish(topic, payload, retain)
+                except Exception as e:
+                    print("[as3935] mqtt publish error:", e)
 
     def _ensure_sensor(self):
         if not self.sensor:
