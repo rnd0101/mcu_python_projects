@@ -243,8 +243,6 @@ class AS3935:
         if len(self._log) > self._log_cap:
             del self._log[0]
 
-    # ---------------- original driver API (unchanged) ----------------
-
     @classmethod
     def from_config(cls, i2c_or_flow, cfg: dict):
         addr = cfg.get("AS3935_ADDR", 0x03)

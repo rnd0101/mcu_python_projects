@@ -16,6 +16,22 @@ CFG = {
     "AS3935_NOISE": 2,
     "AS3935_WDTH": 2,
     "AS3935_SREJ": 2,
+
+    # Wi-Fi
+    "WIFI_SSID": None,
+    "WIFI_PASSWORD": None,
+    "WIFI_TIMEOUT_MS": 10000,
+
+    # MQTT
+    "MQTT_ENABLE": True,
+    "MQTT_HOST": None,
+    "MQTT_PORT": 1883,
+    "MQTT_CLIENT_ID": "esp32-as3935",
+    "MQTT_USER": None,
+    "MQTT_PASSWORD": None,
+    "MQTT_BASE_TOPIC": "sensors/as3935",
+    "MQTT_KEEPALIVE": 60,
+    "MQTT_SSL": False,
 }
 
 # Optional local overrides (git-ignored). If present, it should define CFG_UPDATES = {...}
