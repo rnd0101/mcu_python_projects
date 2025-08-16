@@ -13,9 +13,9 @@ CFG = {
     "AS3935_IRQ_PIN": 2,
     "AS3935_INDOORS": True,
     "AS3935_TUNING_CAP_PF": 96,
-    "AS3935_NOISE": 0,
-    "AS3935_WDTH": 0,
-    "AS3935_SREJ": 0,
+    "AS3935_NOISE": 2,
+    "AS3935_WDTH": 2,
+    "AS3935_SREJ": 2,
 }
 
 # Optional local overrides (git-ignored). If present, it should define CFG_UPDATES = {...}
