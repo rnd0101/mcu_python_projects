@@ -8,8 +8,11 @@ import shutil
 import fnmatch
 
 PORT = os.environ.get("PORT", "/dev/ttyACM0")  # override with env PORT
-SRC_DIR = Path("src")
-EXCLUDES_FILE = Path(".mpyignore")
+
+# at the top of deploy.py
+ROOT_DIR = Path(__file__).resolve().parent.parent   # project root = 2 levels up
+SRC_DIR = ROOT_DIR / "src"
+EXCLUDES_FILE = ROOT_DIR / ".mpyignore"
 
 
 def run(cmd, **kw):
@@ -20,15 +23,10 @@ def check_output(cmd, **kw):
     return subprocess.check_output(cmd, **kw)
 
 
-def list_files_with_git():
-    cmd = ["git", "ls-files", "-co"]
-    if EXCLUDES_FILE.exists():
-        cmd += [f"--exclude-from={EXCLUDES_FILE}"]
-    try:
-        out = check_output(cmd, text=True, cwd=SRC_DIR).splitlines()
-        return [SRC_DIR / p for p in out if p]
-    except Exception:
-        return None
+def list_files_fallback():
+    patterns = load_excludes()
+    files = [p for p in SRC_DIR.rglob("*")  if p.is_file() and not is_excluded(p.relative_to(SRC_DIR), patterns)]
+    return files
 
 
 def load_excludes():
